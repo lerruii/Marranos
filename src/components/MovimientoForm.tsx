@@ -31,6 +31,8 @@ export function MovimientoForm({
     () => CATEGORIAS.filter((c) => c.tipo === tipo || c.tipo === "ambos"),
     [tipo]
   );
+  const [categoria, setCategoria] = useState(movimiento?.categoria ?? categoriasDisponibles[0]?.value);
+  const esVentaAnimal = categoria === "venta_animal";
 
   function actualizarCalculado(nuevaCantidad: string, nuevoUnitario: string) {
     const c = Number(nuevaCantidad);
@@ -45,7 +47,10 @@ export function MovimientoForm({
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          onClick={() => setTipo("gasto")}
+          onClick={() => {
+            setTipo("gasto");
+            setCategoria(CATEGORIAS.find((c) => c.tipo === "gasto")!.value);
+          }}
           className={`tap-target rounded-xl border text-base font-semibold transition ${
             tipo === "gasto"
               ? "border-rust-700 bg-rust-100 text-rust-700"
@@ -56,7 +61,10 @@ export function MovimientoForm({
         </button>
         <button
           type="button"
-          onClick={() => setTipo("ingreso")}
+          onClick={() => {
+            setTipo("ingreso");
+            setCategoria(CATEGORIAS.find((c) => c.tipo === "ingreso")!.value);
+          }}
           className={`tap-target rounded-xl border text-base font-semibold transition ${
             tipo === "ingreso"
               ? "border-green-700 bg-green-100 text-green-900"
@@ -87,10 +95,10 @@ export function MovimientoForm({
             Categoría
           </label>
           <select
-            key={tipo}
             id="categoria"
             name="categoria"
-            defaultValue={movimiento?.categoria ?? categoriasDisponibles[0]?.value}
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value as typeof categoria)}
             required
             className={inputClass}
           >
@@ -119,7 +127,7 @@ export function MovimientoForm({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="cantidad" className={labelClass}>
-            Cantidad (opcional)
+            {esVentaAnimal ? "Cantidad de animales vendidos" : "Cantidad (opcional)"}
           </label>
           <input
             id="cantidad"
@@ -135,6 +143,11 @@ export function MovimientoForm({
             placeholder="Ej. 5"
             className={inputClass}
           />
+          {esVentaAnimal && (
+            <p className="mt-1 text-xs text-ink-soft">
+              Llénala para que &ldquo;animales restantes&rdquo; del lote se actualice solo.
+            </p>
+          )}
         </div>
         <div>
           <label htmlFor="valor_unitario" className={labelClass}>

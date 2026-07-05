@@ -45,6 +45,8 @@ export interface LoteConTotales extends Lote {
   total_gastos: number;
   total_ingresos: number;
   balance: number;
+  animales_vendidos: number;
+  animales_restantes: number;
 }
 
 export function calcularTotales(movimientos: Pick<Movimiento, "tipo" | "valor_total">[]) {
@@ -55,4 +57,11 @@ export function calcularTotales(movimientos: Pick<Movimiento, "tipo" | "valor_to
     else total_ingresos += Number(m.valor_total);
   }
   return { total_gastos, total_ingresos, balance: total_ingresos - total_gastos };
+}
+
+/** Suma la cantidad de las ventas de animal. Requiere que "cantidad" venga diligenciada en esos movimientos. */
+export function calcularAnimalesVendidos(movimientos: Pick<Movimiento, "categoria" | "cantidad">[]) {
+  return movimientos
+    .filter((m) => m.categoria === "venta_animal")
+    .reduce((total, m) => total + (m.cantidad ?? 0), 0);
 }

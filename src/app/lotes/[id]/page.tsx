@@ -6,7 +6,7 @@ import { AddMovimientoPanel } from "@/components/AddMovimientoPanel";
 import { MovimientoRow } from "@/components/MovimientoRow";
 import { ConfirmSubmitButton } from "@/components/ConfirmSubmitButton";
 import { getLote, getMovimientos } from "@/lib/data";
-import { calcularTotales } from "@/lib/types";
+import { calcularAnimalesVendidos, calcularTotales } from "@/lib/types";
 import { formatDate, formatMoney } from "@/lib/format";
 import { deleteLote } from "../actions";
 import { createMovimiento } from "./movimiento-actions";
@@ -24,9 +24,14 @@ export default async function LoteDetallePage({
   const lote = await getLote(id);
   if (!lote) notFound();
 
-  const movimientos = await getMovimientos(id, { desde, hasta });
-  const totales = calcularTotales(movimientos);
   const hayFiltro = Boolean(desde || hasta);
+  const [movimientos, todosLosMovimientos] = await Promise.all([
+    getMovimientos(id, { desde, hasta }),
+    hayFiltro ? getMovimientos(id) : Promise.resolve(null),
+  ]);
+  const totales = calcularTotales(movimientos);
+  const animalesVendidos = calcularAnimalesVendidos(todosLosMovimientos ?? movimientos);
+  const animalesRestantes = Math.max(0, lote.numero_animales - animalesVendidos);
 
   const exportUrl = new URLSearchParams({ loteId: id });
   if (desde) exportUrl.set("desde", desde);
@@ -47,7 +52,9 @@ export default async function LoteDetallePage({
               Ingreso: {formatDate(lote.fecha_ingreso)}
               {lote.fecha_destete && ` · Destete: ${formatDate(lote.fecha_destete)}`}
               {" · "}
-              {lote.numero_animales} animales
+              {animalesVendidos > 0
+                ? `${animalesRestantes} de ${lote.numero_animales} animales (${animalesVendidos} vendidos)`
+                : `${lote.numero_animales} animales`}
             </p>
             {lote.notas && <p className="mt-1 text-sm text-ink-soft">{lote.notas}</p>}
           </div>

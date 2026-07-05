@@ -1,12 +1,14 @@
 import "server-only";
 import { supabaseServer } from "./supabase-server";
-import { calcularTotales, Lote, LoteConTotales, Movimiento } from "./types";
+import { calcularAnimalesVendidos, calcularTotales, Lote, LoteConTotales, Movimiento } from "./types";
 
 export async function getLotesConTotales(filtros?: {
   desde?: string;
   hasta?: string;
 }): Promise<LoteConTotales[]> {
-  let movQuery = supabaseServer.from("movimientos").select("lote_id, tipo, valor_total");
+  let movQuery = supabaseServer
+    .from("movimientos")
+    .select("lote_id, tipo, valor_total, categoria, cantidad");
   if (filtros?.desde) movQuery = movQuery.gte("fecha", filtros.desde);
   if (filtros?.hasta) movQuery = movQuery.lte("fecha", filtros.hasta);
 
@@ -22,7 +24,9 @@ export async function getLotesConTotales(filtros?: {
   return (lotes ?? []).map((lote) => {
     const propios = (movimientos ?? []).filter((m) => m.lote_id === lote.id);
     const totales = calcularTotales(propios);
-    return { ...lote, ...totales };
+    const animales_vendidos = calcularAnimalesVendidos(propios);
+    const animales_restantes = Math.max(0, lote.numero_animales - animales_vendidos);
+    return { ...lote, ...totales, animales_vendidos, animales_restantes };
   });
 }
 
@@ -75,10 +79,18 @@ export function getConsolidado(lotes: LoteConTotales[]) {
     (acc, lote) => ({
       totalLotes: acc.totalLotes + 1,
       totalAnimales: acc.totalAnimales + (lote.numero_animales ?? 0),
+      totalAnimalesRestantes: acc.totalAnimalesRestantes + lote.animales_restantes,
       totalGastos: acc.totalGastos + lote.total_gastos,
       totalIngresos: acc.totalIngresos + lote.total_ingresos,
       balance: acc.balance + lote.balance,
     }),
-    { totalLotes: 0, totalAnimales: 0, totalGastos: 0, totalIngresos: 0, balance: 0 }
+    {
+      totalLotes: 0,
+      totalAnimales: 0,
+      totalAnimalesRestantes: 0,
+      totalGastos: 0,
+      totalIngresos: 0,
+      balance: 0,
+    }
   );
 }

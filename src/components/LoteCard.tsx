@@ -13,7 +13,10 @@ export function LoteCard({ lote }: { lote: LoteConTotales }) {
         <div>
           <h3 className="font-display text-lg font-semibold text-green-900">{lote.nombre}</h3>
           <p className="mt-0.5 text-xs text-ink-soft">
-            {formatDate(lote.fecha_ingreso)} · {lote.numero_animales} animales
+            {formatDate(lote.fecha_ingreso)} ·{" "}
+            {lote.animales_vendidos > 0
+              ? `${lote.animales_restantes} de ${lote.numero_animales} animales`
+              : `${lote.numero_animales} animales`}
           </p>
         </div>
         <span

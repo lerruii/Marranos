@@ -32,7 +32,9 @@ export default async function DashboardPage({
             <h1 className="font-display text-2xl font-semibold text-green-900">Resumen general</h1>
             <p className="mt-1 text-sm text-ink-soft">
               {consolidado.totalLotes} {consolidado.totalLotes === 1 ? "lote" : "lotes"} ·{" "}
-              {consolidado.totalAnimales} animales
+              {consolidado.totalAnimalesRestantes} animales actuales
+              {consolidado.totalAnimalesRestantes !== consolidado.totalAnimales &&
+                ` (de ${consolidado.totalAnimales} ingresados)`}
             </p>
           </div>
           <Link
