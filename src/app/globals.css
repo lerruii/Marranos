@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+:root {
+  --color-cream: #faf5ea;
+  --color-cream-dark: #f1e8d6;
+  --color-paper: #fffdf8;
+  --color-ink: #2c2418;
+  --color-ink-soft: #6b5f4b;
+  --color-line: #e5d8bd;
+
+  --color-green-900: #1f3a2a;
+  --color-green-700: #2f5233;
+  --color-green-600: #3a6640;
+  --color-green-100: #e3ecdf;
+
+  --color-rust-700: #a24a2a;
+  --color-rust-600: #bd5a35;
+  --color-rust-100: #f6e4da;
+
+  --color-gold-600: #c48a2a;
+  --color-gold-100: #f7ecd6;
+}
+
+@theme inline {
+  --color-cream: var(--color-cream);
+  --color-cream-dark: var(--color-cream-dark);
+  --color-paper: var(--color-paper);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-line: var(--color-line);
+
+  --color-green-900: var(--color-green-900);
+  --color-green-700: var(--color-green-700);
+  --color-green-600: var(--color-green-600);
+  --color-green-100: var(--color-green-100);
+
+  --color-rust-700: var(--color-rust-700);
+  --color-rust-600: var(--color-rust-600);
+  --color-rust-100: var(--color-rust-100);
+
+  --color-gold-600: var(--color-gold-600);
+  --color-gold-100: var(--color-gold-100);
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-manrope);
+}
+
+html {
+  background: var(--color-cream);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+}
+
+@layer utilities {
+  .tap-target {
+    min-height: 3rem;
+  }
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
